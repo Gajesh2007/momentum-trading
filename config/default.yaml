@@ -1,0 +1,80 @@
+# Default Configuration - Momentum Trading System
+# All values match Spec.md defaults
+
+universe:
+  min_day_notional: 10_000_000.0  # $10M
+  min_open_interest: 5_000_000.0  # $5M
+  top_n: 40
+  ranking_method: product  # "product" or "percentile"
+
+bars:
+  interval: "1d"  # "1d" or "4h"
+  rebalance_at: "00:05:00"  # UTC for daily; "+5min" for 4h
+
+signal:
+  lookbacks: [10, 30, 90]  # Lookback periods in bars
+  zscore_window_bars: 126  # ~6 months for daily (auto-adjusted to 360 for 4h)
+  clip_min: -2.0
+  clip_max: 2.0
+  epsilon: 1e-9
+
+funding:
+  lambda_penalty: 1.0  # [0.5, 1.5]
+  holding_hours: 24  # Auto-adjusted to 4 for 4h bars
+  directional: true  # Only penalize side that pays
+
+risk:
+  vol_target_annual: 0.15  # 15%
+  w_max: 0.05  # 5% max per asset
+  sigma_min: 0.01  # 1% floor
+  
+  beta_neutral_enabled: false
+  beta_lookback_days: 60
+  
+  cov_method: ledoit_wolf  # "ledoit_wolf", "ewma", "sample"
+  ewma_halflife: 60
+
+liquidity:
+  max_pct_24h_vol: 0.005  # 0.5%
+  max_pct_oi: 0.02  # 2%
+
+stops:
+  atr_multiple: 2.5  # 0 = disabled
+  atr_period: 14
+
+trade_gate:
+  min_edge_to_cost_ratio: 2.5  # Edge ≥ 2.5× friction
+  maker_fee_bps: 0.15  # Base tier
+  taker_fee_bps: 4.5
+  slippage_model: l2_depth  # "fixed" or "l2_depth"
+  fixed_slippage_bps: 2.0
+
+execution:
+  alo_refresh_sec: 10
+  twap_enabled: true
+  twap_total_minutes: 8
+  twap_threshold_usd: 50_000.0  # Use TWAP if notional > $50k
+  enforce_sigfigs: true
+  max_decimals: 6
+
+precision:
+  enforce_sigfigs: true
+  max_sig_figs: 5
+  max_decimals: 6
+
+kill_switch:
+  daily_loss_pct: 0.02  # 2%
+  ws_heartbeat_misses: 5
+  slip_ceiling_bps: 100.0  # 1%
+  max_api_errors: 10
+
+monitoring:
+  log_level: INFO  # DEBUG, INFO, WARNING, ERROR
+  log_dir: logs
+  metrics_enabled: true
+  alert_on_kill_switch: true
+
+hyperliquid:
+  network: testnet  # "testnet" or "mainnet"
+  # address and secret_key loaded from env (HL_ADDRESS, HL_SECRET_KEY)
+

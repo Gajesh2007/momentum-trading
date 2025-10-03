@@ -1,0 +1,79 @@
+# 4h Swing Variant - Higher frequency, tighter stops
+# "Preset B" from Strategy.md
+
+universe:
+  min_day_notional: 10_000_000.0
+  min_open_interest: 5_000_000.0
+  top_n: 40
+  ranking_method: product
+
+bars:
+  interval: "4h"
+  rebalance_at: "+5min"  # 5 minutes after bar close
+
+signal:
+  lookbacks: [24, 96, 240]  # 24h, 96h (4d), 240h (10d) in 4h bars
+  zscore_window_bars: 360  # ~60 days of 4h bars
+  clip_min: -2.0
+  clip_max: 2.0
+  epsilon: 1e-9
+
+funding:
+  lambda_penalty: 1.0
+  holding_hours: 4  # Hold for 4h on average
+  directional: true
+
+risk:
+  vol_target_annual: 0.15
+  w_max: 0.05
+  sigma_min: 0.01
+  
+  beta_neutral_enabled: false
+  beta_lookback_days: 60
+  
+  cov_method: ledoit_wolf
+  ewma_halflife: 60
+
+liquidity:
+  max_pct_24h_vol: 0.005
+  max_pct_oi: 0.02
+
+stops:
+  atr_multiple: 2.0  # Tighter stops for 4h (vs 2.5 for daily)
+  atr_period: 14
+
+trade_gate:
+  min_edge_to_cost_ratio: 3.0  # Higher bar for 4h (more churn)
+  maker_fee_bps: 0.15
+  taker_fee_bps: 4.5
+  slippage_model: l2_depth
+  fixed_slippage_bps: 2.0
+
+execution:
+  alo_refresh_sec: 10
+  twap_enabled: true
+  twap_total_minutes: 8
+  twap_threshold_usd: 50_000.0
+  enforce_sigfigs: true
+  max_decimals: 6
+
+precision:
+  enforce_sigfigs: true
+  max_sig_figs: 5
+  max_decimals: 6
+
+kill_switch:
+  daily_loss_pct: 0.02
+  ws_heartbeat_misses: 5
+  slip_ceiling_bps: 100.0
+  max_api_errors: 10
+
+monitoring:
+  log_level: INFO
+  log_dir: logs
+  metrics_enabled: true
+  alert_on_kill_switch: true
+
+hyperliquid:
+  network: testnet
+
